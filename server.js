@@ -18,7 +18,8 @@ const app = express();
 // 👇 Configure CORS for your frontend
 app.use(cors({
   origin: process.env.FRONTEND_URL, // your frontend URL
-  methods: ["GET", "POST", "PUT", "DELETE", "OPTIONS"],
+  methods: ["GET", "POST", "PATCH","PUT", "DELETE", "OPTIONS"],
+  allowedHeaders: ["Content-Type", "Authorization"], // ✅ Added Authorization
   credentials: true // allow cookies/auth headers
 }));
 
