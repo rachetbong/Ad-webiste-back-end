@@ -13,7 +13,6 @@ export const getUser = async (req, res) => {
 };
 
 // Update user info
-// Update user info
 export const updateUser = async (req, res) => {
   const { fullName, email, password, status, role, phone, adsPerDay } = req.body;
   const userId = req.params.id;

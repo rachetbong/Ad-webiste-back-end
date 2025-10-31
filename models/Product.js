@@ -8,6 +8,8 @@ const productSchema = new mongoose.Schema({
   ratedCount: { type: Number, default: 0 },
   addedBy: { type: String, required: true }, // admin email
   createdAt: { type: Date, default: Date.now },
+  price: {type: Number},
+  reacts: {type: Number}
 });
 
 export default mongoose.model("Product", productSchema);
