@@ -15,7 +15,7 @@ export const getUser = async (req, res) => {
 // Update user info
 // Update user info
 export const updateUser = async (req, res) => {
-  const { fullName, email, password, status, role, phone } = req.body;
+  const { fullName, email, password, status, role, phone, adsPerDay } = req.body;
   const userId = req.params.id;
 
   try {
@@ -30,6 +30,8 @@ export const updateUser = async (req, res) => {
     if (status) user.status = status;
     if (role) user.role = role;
     if (phone) user.phone = phone;
+    if (adsPerDay) user.adsPerDay = adsPerDay;
+
 
     await user.save();
 
@@ -67,10 +69,28 @@ export const deleteUser = async (req, res) => {
 export const getAllUsers = async (req, res) => {
   try {
     const users = await User.find().select("-password"); // exclude passwords
-    console.log(users)
+    // console.log(users)
     res.json(users);
   } catch (err) {
     res.status(500).json({ message: err.message });
   }
 };
+
+
+// PATCH /api/users/add-remaining/:id
+export const addRemainingAds = async (req, res) => {
+    // console.log("add remaining ads runned")
+  try {
+    const { extra } = req.body
+    const user = await User.findById(req.params.id)
+    if (!user) return res.status(404).json({ message: "User not found" })
+
+    user.remaining = (user.remaining || 0) + Number(extra)
+    await user.save()
+
+    res.json({ message: `Added ${extra} ads`, remaining: user.remaining })
+  } catch (err) {
+    res.status(500).json({ message: err.message })
+  }
+}
 

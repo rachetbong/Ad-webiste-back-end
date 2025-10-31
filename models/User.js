@@ -10,6 +10,8 @@ const userSchema = new mongoose.Schema({
   status: {type: String},
   phone: {type: String},
   referrals: {type: String},
+  adsPerDay: {type: Number},
+  remaining: {type: Number},
   referrelBy: {type: String}
 });
 
