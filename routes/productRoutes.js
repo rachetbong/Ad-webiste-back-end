@@ -20,7 +20,7 @@ const parser = multer({ storage });
 // Add Product with image
 router.post("/add", parser.single("image"), addProduct);
 router.get("/all", getAllProducts);
-router.put("/:id", updateProduct);
+router.put("/:id", parser.single("image"), updateProduct);
 router.delete("/:id", deleteProduct);
 
 export default router;
