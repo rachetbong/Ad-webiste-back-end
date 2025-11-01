@@ -9,7 +9,7 @@ router.get("/all", verifyToken, getAllUsers);
 
 router.get("/", verifyToken, getUser);
 router.patch("/:id", verifyToken, updateUser);
-router.delete("/", verifyToken, deleteUser);
+router.delete("/:id", verifyToken, deleteUser);
 router.patch("/add-remaining/:id", addRemainingAds);
 router.get("/luckydraw", verifyToken, getluckydrawStatus);
 
