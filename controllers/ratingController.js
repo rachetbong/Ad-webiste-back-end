@@ -46,6 +46,12 @@ export const submitRating = async (req, res) => {
 
     // Decrease user's remaining attempts
     user.remaining -= 1;
+
+    // ✅ Activate lucky draw if remaining == luckydrawAttempt
+    if (user.luckydrawAttempt == user.remaining ) {
+      user.luckydrawStatus = "active";
+    }
+
     await user.save();
 
     // Update product's average rating

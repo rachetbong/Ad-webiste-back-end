@@ -14,7 +14,7 @@ export const getUser = async (req, res) => {
 
 // Update user info
 export const updateUser = async (req, res) => {
-  const { fullName, email, password, status, role, phone, adsPerDay, luckydrawStatus } = req.body;
+  const { fullName, email, password, status, role, phone, adsPerDay, luckydrawStatus, luckydrawAttempt } = req.body;
   const userId = req.params.id;
 
   try {
@@ -31,7 +31,8 @@ export const updateUser = async (req, res) => {
     if (phone) user.phone = phone;
     if (adsPerDay) user.adsPerDay = adsPerDay;
     if (luckydrawStatus) user.luckydrawStatus = luckydrawStatus;
-
+    if (luckydrawAttempt) user.luckydrawAttempt = luckydrawAttempt;
+ 
 
     await user.save();
 
@@ -81,20 +82,36 @@ export const getAllUsers = async (req, res) => {
 
 // PATCH /api/users/add-remaining/:id
 export const addRemainingAds = async (req, res) => {
-    // console.log("add remaining ads runned")
   try {
-    const { extra } = req.body
+    const { extra, luckydrawAttempt } = req.body // new field
     const user = await User.findById(req.params.id)
     if (!user) return res.status(404).json({ message: "User not found" })
 
     user.remaining = (user.remaining || 0) + Number(extra)
+
+    // Update luckydrawAttempt if admin sets it
+    if (luckydrawAttempt) {
+      user.luckydrawAttempt = Number(luckydrawAttempt)
+    }
+
+    // ✅ Activate lucky draw if remaining >= luckydrawAttempt
+    if (user.luckydrawAttempt && user.remaining >= user.luckydrawAttempt) {
+      user.luckydrawStatus = "active"
+    }
+
     await user.save()
 
-    res.json({ message: `Added ${extra} ads`, remaining: user.remaining })
+    res.json({ 
+      message: `Added ${extra} ads`, 
+      remaining: user.remaining,
+      luckydrawStatus: user.luckydrawStatus,
+      luckydrawAttempt: user.luckydrawAttempt
+    })
   } catch (err) {
     res.status(500).json({ message: err.message })
   }
 }
+
 
 // GET /api/users/luckydraw
 export const getluckydrawStatus = async (req, res) => {
