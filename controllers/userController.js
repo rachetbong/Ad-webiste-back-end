@@ -14,7 +14,7 @@ export const getUser = async (req, res) => {
 
 // Update user info
 export const updateUser = async (req, res) => {
-  const { fullName, email, password, status, role, phone, adsPerDay } = req.body;
+  const { fullName, email, password, status, role, phone, adsPerDay, luckydrawStatus } = req.body;
   const userId = req.params.id;
 
   try {
@@ -30,6 +30,7 @@ export const updateUser = async (req, res) => {
     if (role) user.role = role;
     if (phone) user.phone = phone;
     if (adsPerDay) user.adsPerDay = adsPerDay;
+    if (luckydrawStatus) user.luckydrawStatus = luckydrawStatus;
 
 
     await user.save();
@@ -92,4 +93,20 @@ export const addRemainingAds = async (req, res) => {
     res.status(500).json({ message: err.message })
   }
 }
+
+// GET /api/users/luckydraw
+export const getluckydrawStatus = async (req, res) => {
+  try {
+    const user = await User.findById(req.user.id).select("luckydrawStatus");
+    if (!user) return res.status(404).json({ message: "User not found" });
+
+    res.json({
+      fullName: user.fullName,
+      email: user.email,
+      luckydrawStatus: user.luckydrawStatus || "not set",
+    });
+  } catch (err) {
+    res.status(500).json({ message: err.message });
+  }
+};
 

@@ -12,7 +12,8 @@ const userSchema = new mongoose.Schema({
   referrals: {type: String},
   adsPerDay: {type: Number},
   remaining: {type: Number},
-  referrelBy: {type: String}
+  referrelBy: {type: String},
+  luckydrawStatus: {type: String}
 });
 
 export default mongoose.model("User", userSchema);
