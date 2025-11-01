@@ -7,6 +7,7 @@ import authRoutes from "./routes/authRoutes.js";
 import userRoutes from "./routes/userRoutes.js";
 import supportRoutes from "./routes/supportRoutes.js";
 import productRoutes from "./routes/productRoutes.js";
+import ratingRoutes from "./routes/ratingRoutes.js";
 
 
 import cron from "node-cron";
@@ -33,6 +34,7 @@ app.use("/api/auth", authRoutes);
 app.use("/api/user", userRoutes);
 app.use('/api/support', supportRoutes);
 app.use("/api/products", productRoutes);
+app.use("/api/ratings", ratingRoutes);
 
 
 const PORT = process.env.PORT || 5000;
