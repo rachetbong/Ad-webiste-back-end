@@ -6,7 +6,7 @@ import {
   createFundPayment,
   getAllFundPayments,
   getUserFundPayments,
-  updateFundPaymentStatus,
+  updateFundPaymentStatus
 } from "../controllers/fundPaymentController.js";
 
 const router = express.Router();
@@ -33,5 +33,8 @@ router.get("/user/:userID", getUserFundPayments);
 
 // Approve or reject a payment
 router.patch("/update/:id", updateFundPaymentStatus);
+
+// Get request based onn user ID
+router.get("/:userID", getUserFundPayments);
 
 export default router;

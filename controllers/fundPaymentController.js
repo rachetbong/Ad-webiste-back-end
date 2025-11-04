@@ -51,9 +51,9 @@ export const createFundPayment = async (req, res) => {
 // 📄 Get all fund payment requests (Admin)
 export const getAllFundPayments = async (req, res) => {
   try {
-    console.log("📄 Fetching all fund payments");
+    // console.log("📄 Fetching all fund payments");
     const fundPayments = await FundPayment.find().populate("userID", "name email");
-    console.log("✅ Total fund payments fetched:", fundPayments.length);
+    // console.log("✅ Total fund payments fetched:", fundPayments.length);
     res.status(200).json(fundPayments);
   } catch (error) {
     console.error("❌ Error fetching fund payments:", error);
@@ -77,6 +77,9 @@ export const getUserFundPayments = async (req, res) => {
 
 // ✅ Approve or reject fund payment
 export const updateFundPaymentStatus = async (req, res) => {
+    //     const { id } = req.params;
+    // const { status } = req.body;
+    console.log("update fund payment status :", req.params, req.body)
   try {
     const { id } = req.params;
     const { status } = req.body;
@@ -130,3 +133,16 @@ export const deleteFundPayment = async (req, res) => {
     res.status(500).json({ message: "❌ Error deleting fund payment", error: error.message });
   }
 };
+
+
+// // 🧾 Get fund payments for a specific user
+// export const getUserFundPayments = async (req, res) => {
+//   try {
+//     const { userID } = req.params;
+//     const fundPayments = await FundPayment.find({ userID });
+//     res.status(200).json(fundPayments);
+//   } catch (err) {
+//     console.error(err);
+//     res.status(500).json({ message: "Error fetching user's fund payments", error: err.message });
+//   }
+// };
