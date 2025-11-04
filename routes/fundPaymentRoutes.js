@@ -23,7 +23,7 @@ const storage = new CloudinaryStorage({
 const parser = multer({ storage });
 
 // Customer creates a fund payment request
-router.post("/add", parser.single("proofFile"), createFundPayment);
+router.post("/add", parser.single("imgUrl"), createFundPayment);
 
 // Admin fetch all fund payments
 router.get("/", getAllFundPayments);

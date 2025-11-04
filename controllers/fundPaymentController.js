@@ -3,13 +3,13 @@ import cloudinary from "../config/cloudinary.js";
 
 // 📥 Create new fund payment request (by customer)
 export const createFundPayment = async (req, res) => {
-        const { amount, method, userID } = req.body;
-    console.log("createFundPayment", amount, method, userID)
+        const { amount, method, userID, note } = req.body;
+    console.log("createFundPayment", amount, method, userID, note)
   try {
     console.log("📥 Create Fund Payment Request Body:", req.body);
     console.log("📥 Uploaded File Info:", req.file);
 
-    const { amount, method, userID } = req.body;
+    const { amount, method, userID, note } = req.body;
 
     if (!amount || !method || !userID) {
       console.warn("⚠️ Missing required fields");
@@ -32,6 +32,7 @@ export const createFundPayment = async (req, res) => {
       userID,
       status: "pending",
       requestedDate: new Date(),
+      note
     });
 
     await fundPayment.save();

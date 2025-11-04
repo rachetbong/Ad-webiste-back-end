@@ -40,6 +40,10 @@ const fundPaymentSchema = new mongoose.Schema(
       type: String, // Optional — helps reference or verify transactions
       default: "",
     },
+    note: {
+        type: String,
+        default: "",
+    }
   },
   { timestamps: true }
 );
