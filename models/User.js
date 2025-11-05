@@ -16,7 +16,8 @@ const userSchema = new mongoose.Schema({
   luckydrawStatus: {type: String},
   luckydrawAttempt: {type: Number},
   balance: {type: Number},
-  earning: {type: Number}
+  earning: {type: Number},
+  plan: {type: String}
 });
 
 export default mongoose.model("User", userSchema);

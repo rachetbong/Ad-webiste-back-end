@@ -14,8 +14,9 @@ export const getUser = async (req, res) => {
 
 // Update user info
 export const updateUser = async (req, res) => {
-  const { fullName, email, password, status, role, phone, adsPerDay, luckydrawStatus, luckydrawAttempt } = req.body;
+  const { fullName, email, password, status, role, phone, adsPerDay, luckydrawStatus, luckydrawAttempt, plan } = req.body;
   const userId = req.params.id;
+  console.log(fullName, email, password, status, role, phone, adsPerDay, luckydrawStatus, luckydrawAttempt, plan)
 
   try {
     const user = await User.findById(userId);
@@ -32,6 +33,7 @@ export const updateUser = async (req, res) => {
     if (adsPerDay) user.adsPerDay = adsPerDay;
     if (luckydrawStatus) user.luckydrawStatus = luckydrawStatus;
     if (luckydrawAttempt) user.luckydrawAttempt = luckydrawAttempt;
+    if (plan) user.plan = plan;
  
 
     await user.save();
