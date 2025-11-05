@@ -43,6 +43,9 @@ const fundPaymentSchema = new mongoose.Schema(
     note: {
         type: String,
         default: "",
+    },
+    branchName: {
+      type: String,
     }
   },
   { timestamps: true }

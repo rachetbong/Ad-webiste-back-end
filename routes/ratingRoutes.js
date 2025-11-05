@@ -5,7 +5,8 @@ import {
   getUserRatings, 
   checkUserRating,
   deleteRating,
-  getAllRatings 
+  getAllRatings,
+  getUserEarningsRatings 
 } from "../controllers/ratingController.js";
 import { verifyToken } from "../middleware/authMiddleware.js";
 
@@ -28,5 +29,7 @@ router.delete("/:id", verifyToken, deleteRating);
 
 // ✅ Admin: Get all ratings
 router.get("/all", verifyToken, getAllRatings);
+
+router.get("/user/earnings", verifyToken, getUserEarningsRatings)
 
 export default router;

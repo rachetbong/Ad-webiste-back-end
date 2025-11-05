@@ -272,3 +272,27 @@ export const getAllRatings = async (req, res) => {
     res.status(500).json({ message: "❌ Error fetching ratings" });
   }
 };
+
+// ✅ Get All User Ratings (only rating, createdAt, and earning)
+export const getUserEarningsRatings = async (req, res) => {
+  try {
+    const userId = req.user.id; // From JWT
+
+    const ratings = await Rating.find({ userId })
+      .select("rating createdAt earning") // only these fields
+      .sort({ createdAt: -1 });
+
+    res.status(200).json({
+      success: true,
+      ratings,
+    });
+  } catch (err) {
+    console.error("❌ Error fetching user's ratings:", err);
+    res.status(500).json({
+      success: false,
+      message: "❌ Error fetching user's ratings",
+      error: err.message,
+    });
+  }
+};
+

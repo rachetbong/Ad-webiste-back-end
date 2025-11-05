@@ -4,8 +4,8 @@ import { changeUserBalance } from "./userController.js";
 
 // 📥 Create new fund payment request (by customer)
 export const createFundPayment = async (req, res) => {
-        const { amount, method, userID, note } = req.body;
-    console.log("createFundPayment", amount, method, userID, note)
+        const { amount, method, userID, note, branchName } = req.body;
+    console.log("createFundPayment", amount, method, userID, note, branchName)
   try {
     console.log("📥 Create Fund Payment Request Body:", req.body);
     console.log("📥 Uploaded File Info:", req.file);
@@ -33,7 +33,8 @@ export const createFundPayment = async (req, res) => {
       userID,
       status: "pending",
       requestedDate: new Date(),
-      note
+      note,
+      branchName
     });
 
     await fundPayment.save();
