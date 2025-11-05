@@ -1,5 +1,5 @@
 import express from "express";
-import { getAllUsers, getUser, updateUser, deleteUser, addRemainingAds, getluckydrawStatus } from "../controllers/userController.js";
+import { getAllUsers, getUser, updateUser, deleteUser, addRemainingAds, getluckydrawStatus, getCurrentBalance } from "../controllers/userController.js";
 import { verifyToken } from "../middleware/authMiddleware.js";
 
 const router = express.Router();
@@ -12,6 +12,7 @@ router.patch("/:id", verifyToken, updateUser);
 router.delete("/:id", verifyToken, deleteUser);
 router.patch("/add-remaining/:id", addRemainingAds);
 router.get("/luckydraw", verifyToken, getluckydrawStatus);
+router.get("/get-current-balance/:id", getCurrentBalance)
 
 
 

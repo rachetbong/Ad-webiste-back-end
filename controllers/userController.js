@@ -178,5 +178,20 @@ export const changeUserBalance = async (userId, amount, action) => {
   return user.balance;
 };
 
+// GET /api/users/get-current-balance/:id
+export const getCurrentBalance = async (req, res) => {
+  try {
+    const userId = req.params.id;
+    const user = await User.findById(userId).select("balance");
+    if (!user) return res.status(404).json({ message: "User not found" });
+
+    res.status(200).json({ balance: user.balance || 0 });
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ message: err.message });
+  }
+};
+
+
 
 
