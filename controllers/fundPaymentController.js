@@ -1,5 +1,6 @@
 import FundPayment from "../models/FundPayment.js";
 import cloudinary from "../config/cloudinary.js";
+import { changeUserBalance } from "./userController.js";
 
 // 📥 Create new fund payment request (by customer)
 export const createFundPayment = async (req, res) => {
@@ -84,6 +85,8 @@ export const updateFundPaymentStatus = async (req, res) => {
     const { id } = req.params;
     const { status } = req.body;
 
+
+
     console.log(`🔄 Updating fund payment status for ID: ${id} to "${status}"`);
 
     if (!["approved", "rejected"].includes(status)) {
@@ -91,11 +94,22 @@ export const updateFundPaymentStatus = async (req, res) => {
       return res.status(400).json({ message: "Invalid status value" });
     }
 
+    if (status === "approved") {
+      const updatingFundReq = await FundPayment.findById(id);
+      if (updatingFundReq) {
+        console.log("update balance :", updatingFundReq._id);
+        // Call your backend function to update user's balance
+        await changeUserBalance(updatingFundReq.userID, updatingFundReq.amount, "add");
+      }
+    }
+
+
     const updatedFund = await FundPayment.findByIdAndUpdate(
       id,
       { status, approvedDate: status === "approved" ? new Date() : null },
       { new: true }
     );
+
 
     if (!updatedFund) {
       console.warn("⚠️ Fund payment not found:", id);

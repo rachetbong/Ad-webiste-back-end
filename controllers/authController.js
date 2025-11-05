@@ -15,10 +15,11 @@ export const signup = async (req, res) => {
 
     const role = "user";
     const status = "inactive";
+    const balance = 0;
 
     console.log(fullName, email, password, referralCode, role, status, phone)
 
-    const user = await User.create({ fullName, email, password, phone, referrelBy: referralCode , role, status, });
+    const user = await User.create({ fullName, email, password, phone, referrelBy: referralCode , role, status, balance});
     console.log("signup user : ", user);
 
     const token = jwt.sign({ id: user._id }, process.env.JWT_SECRET, { expiresIn: "1d" });
@@ -59,7 +60,9 @@ export const login = async (req, res) => {
             email: user.email,
             role: user.role,
             status: user.status,
-            remaining: user.remaining
+            remaining: user.remaining,
+            balance: user.balance,
+            earning: user.earning
             }, 
         token });
   } catch (err) {

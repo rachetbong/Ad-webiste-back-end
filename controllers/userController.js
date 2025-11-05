@@ -129,3 +129,54 @@ export const getluckydrawStatus = async (req, res) => {
   }
 };
 
+// PATCH /api/users/update-balance/:id
+export const updateUserBalance = async (req, res) => {
+  try {
+    const userId = req.params.id;
+    const { amount, action } = req.body; // action = "add" or "deduct"
+
+    if (!amount || !["add", "deduct"].includes(action)) {
+      return res.status(400).json({ message: "Invalid request: provide amount and action (add/deduct)" });
+    }
+
+    const user = await User.findById(userId);
+    if (!user) return res.status(404).json({ message: "User not found" });
+
+    if (action === "add") {
+      user.balance = (user.balance || 0) + Number(amount);
+    } else if (action === "deduct") {
+      user.balance = (user.balance || 0) - Number(amount);
+      if (user.balance < 0) user.balance = 0; // optional: prevent negative balance
+    }
+
+    await user.save();
+
+    res.status(200).json({
+      message: `Balance ${action === "add" ? "added" : "deducted"} successfully`,
+      balance: user.balance
+    });
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ message: err.message });
+  }
+};
+
+
+// Reusable function
+export const changeUserBalance = async (userId, amount, action) => {
+  const user = await User.findById(userId);
+  if (!user) throw new Error("User not found");
+
+  if (action === "add") {
+    user.balance = (user.balance || 0) + Number(amount);
+  } else if (action === "deduct") {
+    user.balance = (user.balance || 0) - Number(amount);
+    if (user.balance < 0) user.balance = 0; // optional
+  }
+
+  await user.save();
+  return user.balance;
+};
+
+
+
