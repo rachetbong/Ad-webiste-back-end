@@ -8,6 +8,7 @@ const toDTO = (doc) => ({
   useremail: doc.useremail,
   subject: doc.subject,
   message: doc.message,
+  imageUrl: doc.imageUrl,
   status: doc.status,
   createdAt: doc.createdAt,
   replies: doc.replies?.map((r) => ({
@@ -15,13 +16,18 @@ const toDTO = (doc) => ({
     message: r.message,
     isAdmin: r.isAdmin,
     createdAt: r.createdAt,
+    imageUrl: r.imageUrl,
   })) || [],
 });
 
 export const createTicket = async (req, res) => {
   try {
     const { userId, username, useremail, subject, message } = req.body;
-    const ticket = await Support.create({ userId, username, useremail, subject, message });
+    let imageUrl = "";
+    if (req.file) {
+      imageUrl = req.file.path || req.file.secure_url || "";
+    }
+    const ticket = await Support.create({ userId, username, useremail, subject, message, imageUrl });
     res.status(201).json(toDTO(ticket));
   } catch (e) {
     res.status(400).json({ message: e.message });
@@ -52,9 +58,13 @@ export const getTicketById = async (req, res) => {
 export const addReply = async (req, res) => {
   try {
     const { message, isAdmin } = req.body;
+    let imageUrl = "";
+    if (req.file) {
+      imageUrl = req.file.path || req.file.secure_url || "";
+    }
     const t = await Support.findById(req.params.id);
     if (!t) return res.status(404).json({ message: "Not found" });
-    t.replies.push({ message, isAdmin: !!isAdmin });
+    t.replies.push({ message, isAdmin: !!isAdmin, imageUrl });
     await t.save();
     res.status(201).json(toDTO(t));
   } catch (e) {

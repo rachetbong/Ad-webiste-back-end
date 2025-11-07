@@ -2,9 +2,10 @@ import mongoose from "mongoose";
 
 const replySchema = new mongoose.Schema(
   {
-    message: { type: String, required: true },
+    message: { type: String, required: false },
     isAdmin: { type: Boolean, default: false },
     createdAt: { type: Date, default: Date.now },
+    imageUrl: { type: String },
   },
   { _id: true }
 );
@@ -16,6 +17,7 @@ const supportSchema = new mongoose.Schema(
     useremail: { type: String, required: true },
     subject: { type: String, required: true },
     message: { type: String, required: true }, // initial message
+    imageUrl: { type: String },
     status: {
       type: String,
       enum: ["open", "in-progress", "resolved"],
