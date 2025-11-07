@@ -11,7 +11,18 @@ const productSchema = new mongoose.Schema({
   price: {type: Number},
   income: { type: Number, default: 0 },
   reacts: {type: Number},
-  plan: { type: String, enum: ["Starter", "Basic", "Beginner", "Advanced", "Professional", "Premium"], default: "Starter" }
+  plan: { 
+  type: String, 
+  enum: [
+    "Starter", 
+    "Basic", 
+    "Beginner", 
+    "Advanced", 
+    "Professional", 
+    "Premium"
+  ], 
+  default: "Starter" 
+}
 });
 
 export default mongoose.model("Product", productSchema);
