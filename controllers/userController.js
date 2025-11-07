@@ -115,6 +115,31 @@ export const addRemainingAds = async (req, res) => {
 }
 
 
+
+// PATCH /api/users/add-topup/:id
+export const addTopup = async (req, res) => {
+  console.log("runnned")
+  const { extra } = req.body
+  const temp = req.params.id
+  console.log("test :", extra, temp) 
+  try {
+    const { extra } = req.body // new field
+    const user = await User.findById(req.params.id)
+    if (!user) return res.status(404).json({ message: "User not found" })
+
+    user.balance = (user.balance || 0) + Number(extra)
+
+    await user.save()
+
+    res.json({ 
+      message: `Added ${extra} topup`, 
+      balance: user.balance,
+    })
+  } catch (err) {
+    res.status(500).json({ message: err.message })
+  }
+}
+
 // GET /api/users/luckydraw
 export const getluckydrawStatus = async (req, res) => {
   try {
