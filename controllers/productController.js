@@ -9,7 +9,7 @@ export const addProduct = async (req, res) => {
     console.log("Received body:", req.body);       // Check text fields
     console.log("Received file:", req.file);   
 
-    const { name, description, rating, ratedCount, addedBy, now, income } = req.body;
+    const { name, description, rating, ratedCount, addedBy, now, income, plan } = req.body;
 
     if (!name || !addedBy) {
       return res.status(400).json({ message: "Name and addedBy are required" });
@@ -26,7 +26,8 @@ export const addProduct = async (req, res) => {
       ratedCount: ratedCount || 0,
       addedBy,
       createdAt: now || new Date(),
-      income
+      income,
+      plan
     });
 
     await product.save();
