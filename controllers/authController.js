@@ -5,11 +5,17 @@ import jwt from "jsonwebtoken";
 import { CommandStartedEvent } from "mongodb";
 
 export const signup = async (req, res) => {
-  const { fullName, email, password, referralCode, phone } = req.body;
+  const { fullName, firstName, lastName, username, email, password, referralCode, phone } = req.body;
   try {
 
     const existing = await User.findOne({ email });
     if (existing) return res.status(400).json({ message: "Email already exists" });
+
+    // Check if username already exists
+    if (username) {
+      const existingUsername = await User.findOne({ username });
+      if (existingUsername) return res.status(400).json({ message: "Username already exists" });
+    }
 
     // const hashed = await bcrypt.hash(password, 10);
 
@@ -17,13 +23,13 @@ export const signup = async (req, res) => {
     const status = "active";
     const balance = 0;
 
-    console.log(fullName, email, password, referralCode, role, status, phone)
+    console.log(fullName, firstName, lastName, username, email, password, referralCode, role, status, phone)
 
-    const user = await User.create({ fullName, email, password, phone, referrelBy: referralCode , role, status, balance});
+    const user = await User.create({ fullName, firstName, lastName, username, email, password, phone, referrelBy: referralCode, role, status, balance});
     console.log("signup user : ", user);
 
     const token = jwt.sign({ id: user._id }, process.env.JWT_SECRET, { expiresIn: "1d" });
-    res.json({ user: { id: user._id, fullName, email }, token });
+    res.json({ user: { id: user._id, fullName, firstName, lastName, username, email }, token });
   } catch (err) {
     res.status(500).json({ message: err.message });
   }
@@ -57,7 +63,11 @@ export const login = async (req, res) => {
         user: { 
             id: user._id,
             fullName: user.fullName,
+            firstName: user.firstName,
+            lastName: user.lastName,
+            username: user.username,
             email: user.email,
+            phone: user.phone,
             role: user.role,
             status: user.status,
             remaining: user.remaining,
