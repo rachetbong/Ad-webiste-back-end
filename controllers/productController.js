@@ -1,4 +1,7 @@
 import Product from "../models/Product.js";
+import Rating from "../models/Rating.js";
+import DailyProductView from "../models/DailyProductView.js";
+
 
 // ✅ Create product
 export const addProduct = async (req, res) => {
@@ -84,5 +87,39 @@ export const deleteProduct = async (req, res) => {
     res.json({ message: "✅ Product deleted successfully" });
   } catch (err) {
     res.status(500).json({ message: "❌ Error deleting product", error: err.message });
+  }
+};
+
+
+export const getUnratedProducts = async (req, res) => {
+  try {
+    const userId = req.user.id;
+    const today = new Date().toISOString().split("T")[0]; // e.g., "2025-11-07"
+
+    // Check if today's set already exists
+    let dailyView = await DailyProductView.findOne({ userId, date: today });
+
+    if (dailyView) {
+      // Already generated today → fetch the same products
+      const products = await Product.find({ _id: { $in: dailyView.productIds } });
+      return res.status(200).json(products);
+    }
+
+    // Otherwise, generate new 30 unrated products
+    const ratedProductIds = await Rating.find({ userId }).distinct("productId");
+
+    const unratedProducts = await Product.aggregate([
+      { $match: { _id: { $nin: ratedProductIds } } },
+      { $sample: { size: 30 } } // random 30
+    ]);
+
+    // Save this set for today
+    const productIds = unratedProducts.map(p => p._id);
+    await DailyProductView.create({ userId, date: today, productIds });
+
+    res.status(200).json(unratedProducts);
+  } catch (error) {
+    console.error("Error fetching daily unrated products:", error);
+    res.status(500).json({ message: "Failed to fetch products" });
   }
 };

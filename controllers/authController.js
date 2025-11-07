@@ -20,7 +20,7 @@ export const signup = async (req, res) => {
     // const hashed = await bcrypt.hash(password, 10);
 
     const role = "user";
-    const status = "inactive";
+    const status = "active";
     const balance = 0;
 
     console.log(fullName, firstName, lastName, username, email, password, referralCode, role, status, phone)
