@@ -94,56 +94,92 @@ export const deleteProduct = async (req, res) => {
 
 
 // 30 ads per day to customer
+// export const getUnratedProducts = async (req, res) => {
+//   console.log("runed get unrader prodcut")
+//   try {
+//     const userId = req.user.id;
+//     const today = new Date().toISOString().split("T")[0];
+
+//     // Fetch the logged-in user's plan
+//     const user = await User.findById(userId);
+//     if (!user) {
+//       return res.status(404).json({ message: "User not found" });
+//     }
+
+//     const userPlan = user.plan;
+
+//     // Check if today's set already exists
+//     let dailyView = await DailyProductView.findOne({ userId, date: today });
+
+//     if (dailyView) {
+//       // Already generated today → fetch same products
+//       const products = await Product.find({
+//         _id: { $in: dailyView.productIds },
+//         plan: userPlan,
+//         isLuckyOrderProduct: "no"   // ✅ only "no"
+//       });
+
+//       console.log("unrated products :", products)
+//       return res.status(200).json(products);
+//     }
+
+//     // Otherwise, generate new 30 unrated products (same plan only)
+//     const ratedProductIds = await Rating.find({ userId }).distinct("productId");
+
+//     const unratedProducts = await Product.aggregate([
+//       {
+//         $match: {
+//           _id: { $nin: ratedProductIds },
+//           plan: userPlan,
+//           isLuckyOrderProduct: "no"  // ✅ only "no"
+//         },
+//       },
+//       { $sample: { size: 30 } },
+//     ]);
+
+//     // Save this set for today
+//     const productIds = unratedProducts.map((p) => p._id);
+//     await DailyProductView.create({ userId, date: today, productIds });
+
+//     res.status(200).json(unratedProducts);
+//   } catch (error) {
+//     console.error("Error fetching daily unrated products:", error);
+//     res.status(500).json({ message: "Failed to fetch products" });
+//   }
+// };
+
 export const getUnratedProducts = async (req, res) => {
+  console.log("🟢 getUnratedProducts started");
+
   try {
     const userId = req.user.id;
-    const today = new Date().toISOString().split("T")[0];
+    console.log("User ID:", userId);
 
     // Fetch the logged-in user's plan
     const user = await User.findById(userId);
     if (!user) {
+      console.log("❌ User not found");
       return res.status(404).json({ message: "User not found" });
     }
-
     const userPlan = user.plan;
+    console.log("User plan:", userPlan);
 
-    // Check if today's set already exists
-    let dailyView = await DailyProductView.findOne({ userId, date: today });
-
-    if (dailyView) {
-      // Already generated today → fetch same products
-      const products = await Product.find({
-        _id: { $in: dailyView.productIds },
-        plan: userPlan,
-        isLuckyOrderProduct: "no"   // ✅ only "no"
-      });
-      return res.status(200).json(products);
-    }
-
-    // Otherwise, generate new 30 unrated products (same plan only)
-    const ratedProductIds = await Rating.find({ userId }).distinct("productId");
-
-    const unratedProducts = await Product.aggregate([
-      {
-        $match: {
-          _id: { $nin: ratedProductIds },
-          plan: userPlan,
-          isLuckyOrderProduct: "no"  // ✅ only "no"
-        },
-      },
+    // Fetch 30 random products for the user's plan, only where isLuckyOrderProduct is "no"
+    const products = await Product.aggregate([
+      { $match: { plan: userPlan, isLuckyOrderProduct: "no" } },
       { $sample: { size: 30 } },
     ]);
 
-    // Save this set for today
-    const productIds = unratedProducts.map((p) => p._id);
-    await DailyProductView.create({ userId, date: today, productIds });
+    console.log("Products fetched (no lucky order):", products.length, products);
 
-    res.status(200).json(unratedProducts);
+    res.status(200).json(products);
   } catch (error) {
-    console.error("Error fetching daily unrated products:", error);
+    console.error("❌ Error fetching products:", error);
     res.status(500).json({ message: "Failed to fetch products" });
   }
 };
+
+
 
 
 // ✅ Get all Lucky Order Products
