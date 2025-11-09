@@ -2,7 +2,7 @@ import express from "express";
 import multer from "multer";
 import { CloudinaryStorage } from "multer-storage-cloudinary";
 import cloudinary from "../config/cloudinary.js";
-import { addProduct, getAllProducts, updateProduct, deleteProduct, getUnratedProducts } from "../controllers/productController.js";
+import { addProduct, getAllProducts, updateProduct, deleteProduct, getUnratedProducts, getLuckyOrderProducts } from "../controllers/productController.js";
 import { verifyToken } from "../middleware/authMiddleware.js";
 
 const router = express.Router();
@@ -24,6 +24,7 @@ router.get("/all", getAllProducts);
 router.put("/:id", parser.single("image"), updateProduct);
 router.delete("/:id", deleteProduct);
 router.get("/get-unrated-30-products", verifyToken, getUnratedProducts);
+router.get("/lucky-products", verifyToken, getLuckyOrderProducts);
 
 
 export default router;

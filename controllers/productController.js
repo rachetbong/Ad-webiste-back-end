@@ -93,6 +93,7 @@ export const deleteProduct = async (req, res) => {
 };
 
 
+// 30 ads per day to customer
 export const getUnratedProducts = async (req, res) => {
   try {
     const userId = req.user.id;
@@ -113,7 +114,8 @@ export const getUnratedProducts = async (req, res) => {
       // Already generated today → fetch same products
       const products = await Product.find({
         _id: { $in: dailyView.productIds },
-        plan: userPlan, // ensure only same-plan products
+        plan: userPlan,
+        isLuckyOrderProduct: "no"   // ✅ only "no"
       });
       return res.status(200).json(products);
     }
@@ -125,7 +127,8 @@ export const getUnratedProducts = async (req, res) => {
       {
         $match: {
           _id: { $nin: ratedProductIds },
-          plan: userPlan, // filter by same plan
+          plan: userPlan,
+          isLuckyOrderProduct: "no"  // ✅ only "no"
         },
       },
       { $sample: { size: 30 } },
@@ -139,5 +142,17 @@ export const getUnratedProducts = async (req, res) => {
   } catch (error) {
     console.error("Error fetching daily unrated products:", error);
     res.status(500).json({ message: "Failed to fetch products" });
+  }
+};
+
+
+// ✅ Get all Lucky Order Products
+export const getLuckyOrderProducts = async (req, res) => {
+  try {
+    const products = await Product.find({ isLuckyOrderProduct: "yes" });
+    res.status(200).json(products);
+  } catch (error) {
+    console.error("Error fetching lucky order products:", error);
+    res.status(500).json({ message: "Failed to fetch lucky order products" });
   }
 };

@@ -20,7 +20,9 @@ const userSchema = new mongoose.Schema({
   luckydrawAttempt: {type: Number},
   balance: {type: Number},
   earning: {type: Number},
-  plan: {type: String}
+  plan: {type: String},
+  luckyOrderId: { type: mongoose.Schema.Types.ObjectId, ref: "Product", default: null },
+
 });
 
 export default mongoose.model("User", userSchema);
