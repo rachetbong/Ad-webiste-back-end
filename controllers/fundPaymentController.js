@@ -100,7 +100,7 @@ export const updateFundPaymentStatus = async (req, res) => {
       if (updatingFundReq) {
         console.log("update balance :", updatingFundReq._id);
         // Call your backend function to update user's balance
-        await changeUserBalance(updatingFundReq.userID, updatingFundReq.amount, "add");
+        // await changeUserBalance(updatingFundReq.userID, updatingFundReq.amount, "add");
       }
     }
 
