@@ -16,9 +16,9 @@ export const getUser = async (req, res) => {
 
 // Update user info
 export const updateUser = async (req, res) => {
-  const { fullName, email, password, status, role, phone, adsPerDay, luckydrawStatus, luckydrawAttempt, plan, luckyOrderId } = req.body;
+  const { fullName, email, password, status, role, phone, adsPerDay, luckydrawStatus, luckydrawAttempt, plan, luckyOrderId, topgradeStatus } = req.body;
   const userId = req.params.id;
-  console.log(fullName, email, password, status, role, phone, adsPerDay, luckydrawStatus, luckydrawAttempt, plan, luckyOrderId)
+  console.log(fullName, email, password, status, role, phone, adsPerDay, luckydrawStatus, luckydrawAttempt, plan, luckyOrderId, topgradeStatus)
 
   try {
     const user = await User.findById(userId);
@@ -37,7 +37,8 @@ export const updateUser = async (req, res) => {
     if (luckydrawAttempt) user.luckydrawAttempt = luckydrawAttempt;
     if (plan) user.plan = plan;
     if (luckyOrderId) user.luckyOrderId = luckyOrderId;
- 
+    if (topgradeStatus) user.topgradeStatus = topgradeStatus;
+
 
     await user.save();
 
@@ -148,7 +149,7 @@ export const getluckydrawStatus = async (req, res) => {
   try {
     // Find user with luckyOrderId
     const user = await User.findById(req.user.id)
-      .select("fullName email luckydrawStatus luckyOrderId");
+      .select("fullName email luckydrawStatus luckyOrderId topgradeStatus");
 
     if (!user) return res.status(404).json({ message: "User not found" });
 
@@ -170,6 +171,7 @@ export const getluckydrawStatus = async (req, res) => {
       fullName: user.fullName,
       email: user.email,
       luckydrawStatus: user.luckydrawStatus || "not set",
+      topgradeStatus: user.topgradeStatus || "not set",
       luckyProduct: luckyProductDetails, // null if no lucky product
     });
   } catch (err) {
