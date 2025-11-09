@@ -9,8 +9,7 @@ import supportRoutes from "./routes/supportRoutes.js";
 import productRoutes from "./routes/productRoutes.js";
 import ratingRoutes from "./routes/ratingRoutes.js";
 import fundPaymentRoutes from "./routes/fundPaymentRoutes.js";
-
-
+import payoutRoutes from "./routes/payoutRoutes.js";
 
 import cron from "node-cron";
 import User from "./models/User.js";
@@ -38,7 +37,7 @@ app.use('/api/support', supportRoutes);
 app.use("/api/products", productRoutes);
 app.use("/api/ratings", ratingRoutes);
 app.use("/api/fund-payments", fundPaymentRoutes);
-
+app.use("/api/payout", payoutRoutes);
 
 
 
