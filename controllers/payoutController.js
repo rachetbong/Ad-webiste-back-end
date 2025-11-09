@@ -81,12 +81,28 @@ export const updatePayoutStatus = async (req, res) => {
 };
 
 
-// ADMIN: Get all payouts (raw, no population, no sorting)
+// controllers/payoutController.js
 export const getAllPayouts = async (req, res) => {
   try {
-    const payouts = await Payout.find(); // Only this line
-    res.json(payouts);
+    const payouts = await Payout.find({})
+      .populate({
+        path: "userId",
+        select: "tempId fullName email username", // ← include tempId
+      })
+      .lean();
+
+    const result = payouts.map(p => ({
+      ...p,
+      tempId: p.userId?.tempId ?? null,
+      userId: p.userId?._id?.toString(),
+      fullName: p.userId?.fullName ?? "",
+      email: p.userId?.email ?? "",
+      username: p.userId?.username ?? "",
+    }));
+
+    res.json(result);
   } catch (err) {
+    console.error(err);
     res.status(500).json({ error: "Failed to fetch payouts" });
   }
 };
