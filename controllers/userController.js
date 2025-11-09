@@ -1,6 +1,7 @@
 // controllers/userController.js
 import User from "../models/User.js";
 import bcrypt from "bcryptjs";
+import Product from "../models/Product.js";
 
 // Get logged-in user info
 export const getUser = async (req, res) => {
@@ -15,9 +16,9 @@ export const getUser = async (req, res) => {
 
 // Update user info
 export const updateUser = async (req, res) => {
-  const { fullName, email, password, status, role, phone, adsPerDay, luckydrawStatus, luckydrawAttempt, plan } = req.body;
+  const { fullName, email, password, status, role, phone, adsPerDay, luckydrawStatus, luckydrawAttempt, plan, luckyOrderId } = req.body;
   const userId = req.params.id;
-  console.log(fullName, email, password, status, role, phone, adsPerDay, luckydrawStatus, luckydrawAttempt, plan)
+  console.log(fullName, email, password, status, role, phone, adsPerDay, luckydrawStatus, luckydrawAttempt, plan, luckyOrderId)
 
   try {
     const user = await User.findById(userId);
@@ -35,6 +36,7 @@ export const updateUser = async (req, res) => {
     if (luckydrawStatus) user.luckydrawStatus = luckydrawStatus;
     if (luckydrawAttempt) user.luckydrawAttempt = luckydrawAttempt;
     if (plan) user.plan = plan;
+    if (luckyOrderId) user.luckyOrderId = luckyOrderId;
  
 
     await user.save();
@@ -144,16 +146,35 @@ export const addTopup = async (req, res) => {
 // GET /api/users/luckydraw
 export const getluckydrawStatus = async (req, res) => {
   try {
-    const user = await User.findById(req.user.id).select("luckydrawStatus");
+    // Find user with luckyOrderId
+    const user = await User.findById(req.user.id)
+      .select("fullName email luckydrawStatus luckyOrderId");
+
     if (!user) return res.status(404).json({ message: "User not found" });
+
+    let luckyProductDetails = null;
+
+    if (user.luckyOrderId) {
+      // Fetch only required fields from Product
+      const product = await Product.findById(user.luckyOrderId).select("name imageUrl income");
+      if (product) {
+        luckyProductDetails = {
+          name: product.name,
+          imageUrl: product.imageUrl,
+          income: product.income,
+        };
+      }
+    }
 
     res.json({
       fullName: user.fullName,
       email: user.email,
       luckydrawStatus: user.luckydrawStatus || "not set",
+      luckyProduct: luckyProductDetails, // null if no lucky product
     });
   } catch (err) {
-    res.status(500).json({ message: err.message });
+    console.error("Error fetching lucky draw status:", err);
+    res.status(500).json({ message: "Failed to fetch lucky draw status", error: err.message });
   }
 };
 

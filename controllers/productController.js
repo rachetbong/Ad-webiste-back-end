@@ -156,3 +156,22 @@ export const getLuckyOrderProducts = async (req, res) => {
     res.status(500).json({ message: "Failed to fetch lucky order products" });
   }
 };
+
+// ✅ Get orders by product ID
+// ✅ Get product by ID
+export const getProductById = async (req, res) => {
+  try {
+    const { productId } = req.params;
+
+    if (!productId) return res.status(400).json({ message: "Product ID is required" });
+
+    const product = await Product.findById(productId);
+
+    if (!product) return res.status(404).json({ message: "Product not found" });
+
+    res.status(200).json({ product }); // return product directly
+  } catch (err) {
+    console.error("Error fetching product by ID:", err);
+    res.status(500).json({ message: "Failed to fetch product", error: err.message });
+  }
+};
