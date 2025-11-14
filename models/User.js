@@ -23,7 +23,8 @@ const userSchema = new mongoose.Schema({
   plan: { type: String, default: "none" },
   luckyOrderId: { type: mongoose.Schema.Types.ObjectId, ref: "Product", default: null },
   tempId: { type: Number, unique: true }, // 👈 make unique
-  topgradeStatus: {type: String}
+  topgradeStatus: {type: String},
+  promoCode: { type: String },
 });
 
 // 👇 Generate a unique tempId before saving
