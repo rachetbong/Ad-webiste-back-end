@@ -16,10 +16,9 @@ export const getUser = async (req, res) => {
 
 // Update user info
 export const updateUser = async (req, res) => {
-  const { fullName, email, password, status, role, phone, adsPerDay, luckydrawStatus, luckydrawAttempt, plan, luckyOrderId, topgradeStatus } = req.body;
+  const { fullName, email, password, status, role, phone, adsPerDay, luckydrawStatus, luckydrawAttempt, plan, luckyOrderId, topgradeStatus, promoCode } = req.body;
   const userId = req.params.id;
-  console.log(fullName, email, password, status, role, phone, adsPerDay, luckydrawStatus, luckydrawAttempt, plan, luckyOrderId, topgradeStatus)
-
+  console.log("Update fields:", { fullName, email, password, status, role, phone, adsPerDay, luckydrawStatus, luckydrawAttempt, plan, luckyOrderId, topgradeStatus, promoCode });
   try {
     const user = await User.findById(userId);
     if (!user) return res.status(404).json({ message: "User not found" });
@@ -38,6 +37,7 @@ export const updateUser = async (req, res) => {
     if (plan) user.plan = plan;
     if (luckyOrderId) user.luckyOrderId = luckyOrderId;
     if (topgradeStatus) user.topgradeStatus = topgradeStatus;
+    if (promoCode) user.promoCode = promoCode;
 
 
     await user.save();
@@ -278,5 +278,8 @@ export const localStorageRefresh = async (req, res) => {
     return res.status(500).json({ message: "Failed to fetch local storage data" });
   }
 };
+
+
+
 
 
