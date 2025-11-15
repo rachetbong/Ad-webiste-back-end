@@ -47,6 +47,7 @@ export const getTickets = async (req, res) => {
 
 export const getTicketById = async (req, res) => {
   try {
+    console.log(`[getTicketById] Fetching ticket for id: ${req.params.id} at ${new Date().toISOString()}`);
     const t = await Support.findById(req.params.id);
     if (!t) return res.status(404).json({ message: "Not found" });
     res.json(toDTO(t));
