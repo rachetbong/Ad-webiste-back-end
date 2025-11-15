@@ -6,7 +6,7 @@ import Product from "../models/Product.js";
 // Get logged-in user info
 export const getUser = async (req, res) => {
   try {
-    const user = await User.findById(req.user.id).select("-password");
+    const user = await User.findById(req.user.id).select("");
     res.json(user);
   } catch (err) {
     res.status(500).json({ message: err.message });
@@ -16,9 +16,9 @@ export const getUser = async (req, res) => {
 
 // Update user info
 export const updateUser = async (req, res) => {
-  const { fullName, email, password, status, role, phone, adsPerDay, luckydrawStatus, luckydrawAttempt, plan, luckyOrderId, topgradeStatus, promoCode } = req.body;
+  const { fullName, email, password, status, role, phone, adsPerDay, luckydrawStatus, luckydrawAttempt, plan, luckyOrderId, topgradeStatus, promoCode, topgradeAttempt, luckyOrderPrice } = req.body;
   const userId = req.params.id;
-  console.log("Update fields:", { fullName, email, password, status, role, phone, adsPerDay, luckydrawStatus, luckydrawAttempt, plan, luckyOrderId, topgradeStatus, promoCode });
+  console.log("Update fields:", { fullName, email, password, status, role, phone, adsPerDay, luckydrawStatus, luckydrawAttempt, plan, luckyOrderId, topgradeStatus, promoCode, topgradeAttempt, luckyOrderPrice });
   try {
     const user = await User.findById(userId);
     if (!user) return res.status(404).json({ message: "User not found" });
@@ -38,6 +38,8 @@ export const updateUser = async (req, res) => {
     if (luckyOrderId) user.luckyOrderId = luckyOrderId;
     if (topgradeStatus) user.topgradeStatus = topgradeStatus;
     if (promoCode) user.promoCode = promoCode;
+    if (topgradeAttempt) user.topgradeAttempt = topgradeAttempt;
+    if (luckyOrderPrice) user.luckyOrderPrice = luckyOrderPrice;
 
 
     await user.save();
@@ -77,7 +79,7 @@ export const deleteUser = async (req, res) => {
 // Get all users
 export const getAllUsers = async (req, res) => {
   try {
-    const users = await User.find().select("-password"); // exclude passwords
+    const users = await User.find().select(""); // exclude passwords
     // console.log(users)
     res.json(users);
   } catch (err) {
@@ -149,7 +151,7 @@ export const getluckydrawStatus = async (req, res) => {
   try {
     // Find user with luckyOrderId
     const user = await User.findById(req.user.id)
-      .select("fullName email luckydrawStatus luckyOrderId topgradeStatus");
+      .select("fullName email luckydrawStatus luckyOrderId topgradeStatus luckydrawAttempt topgradeAttempt balance luckyOrderPrice");
 
     if (!user) return res.status(404).json({ message: "User not found" });
 
@@ -167,12 +169,34 @@ export const getluckydrawStatus = async (req, res) => {
       }
     }
 
+    // Update luckydrawAttempt if needed
+    if (user.luckydrawAttempt === 0 || user.luckydrawAttempt === "0") {
+      user.luckydrawStatus = "active";
+      user.luckydrawAttempt = -1;
+      user.balance -= user.luckyOrderPrice;
+      await user.save();  // ✅ SAVE updated user
+    }
+
+    // Update topgradeAttempt if needed
+    if (user.topgradeAttempt === 0 || user.topgradeAttempt === "0") {
+      user.topgradeStatus = "active";
+      user.topgradeAttempt = -1;
+      user.balance -= user.luckyOrderPrice;
+      await user.save();  // ✅ SAVE updated user
+    }
+
+
+
+
     res.json({
       fullName: user.fullName,
       email: user.email,
       luckydrawStatus: user.luckydrawStatus || "not set",
       topgradeStatus: user.topgradeStatus || "not set",
       luckyProduct: luckyProductDetails, // null if no lucky product
+      luckydrawAttempt: user.luckydrawAttempt,
+      topgradeAttempt: user.topgradeAttempt
+
     });
   } catch (err) {
     console.error("Error fetching lucky draw status:", err);
@@ -254,6 +278,30 @@ export const getRemaining = async (req, res) => {
   }
 }
 
+
+export const localStorageRefresh = async (req, res) => {
+  console.log("local storage refresh runned")
+  try {
+    const userId = req.params.id;
+
+    const user = await User.findById(userId).select("status remaining balance plan");
+
+    if (!user) {
+      return res.status(404).json({ message: "User not found" });
+    }
+
+    return res.status(200).json({
+      status: user.status,
+      remaining: user.remaining,
+      balance: user.balance,
+      plan: user.plan,
+    });
+
+  } catch (err) {
+    console.error(err);
+    return res.status(500).json({ message: "Failed to fetch local storage data" });
+  }
+};
 
 
 
