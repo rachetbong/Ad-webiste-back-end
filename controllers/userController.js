@@ -255,4 +255,28 @@ export const getRemaining = async (req, res) => {
 }
 
 
+export const localStorageRefresh = async (req, res) => {
+  console.log("local storage refresh runned")
+  try {
+    const userId = req.params.id;
+
+    const user = await User.findById(userId).select("status remaining balance plan");
+
+    if (!user) {
+      return res.status(404).json({ message: "User not found" });
+    }
+
+    return res.status(200).json({
+      status: user.status,
+      remaining: user.remaining,
+      balance: user.balance,
+      plan: user.plan,
+    });
+
+  } catch (err) {
+    console.error(err);
+    return res.status(500).json({ message: "Failed to fetch local storage data" });
+  }
+};
+
 
