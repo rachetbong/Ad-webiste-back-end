@@ -41,14 +41,41 @@ export const addProduct = async (req, res) => {
 
 
 // ✅ Get all products
+// export const getAllProducts = async (req, res) => {
+//   try {
+//     const products = await Product.find().sort({ createdAt: -1 });
+//     res.json(products);
+//   } catch (err) {
+//     res.status(500).json({ message: "❌ Error fetching products", error: err.message });
+//   }
+// };
 export const getAllProducts = async (req, res) => {
   try {
-    const products = await Product.find().sort({ createdAt: -1 });
-    res.json(products);
+    const page = parseInt(req.query.page) || 1
+    const limit = parseInt(req.query.limit) || 50
+    const skip = (page - 1) * limit
+    const type = req.query.type
+
+    const filter = {}
+    if (type === "lucky") filter.isLuckyOrderProduct = "yes"
+    if (type === "normal") filter.isLuckyOrderProduct = "no"
+
+    const total = await Product.countDocuments(filter)
+    const products = await Product.find(filter)
+      .sort({ createdAt: -1 })
+      .skip(skip)
+      .limit(limit)
+
+    res.json({
+      products,
+      hasMore: skip + products.length < total,
+      currentPage: page,
+      total
+    })
   } catch (err) {
-    res.status(500).json({ message: "❌ Error fetching products", error: err.message });
+    res.status(500).json({ message: "Error fetching products" })
   }
-};
+}
 
 // ✅ Update product
 export const updateProduct = async (req, res) => {
