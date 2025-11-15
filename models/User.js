@@ -16,16 +16,16 @@ const userSchema = new mongoose.Schema({
   adsPerDay: { type: Number },
   remaining: { type: Number },
   referrelBy: { type: String },
-  luckydrawStatus: { type: String },
-  luckydrawAttempt: { type: Number },
+  luckydrawStatus: { type: String, default: "inactive" },
+  luckydrawAttempt: { type: Number, default: -1 },
   luckyOrderPrice: { type: Number },
-  topgradeAttempt: { type: Number },
+  topgradeAttempt: { type: Number, default: -1 },
   balance: { type: Number },
   earning: { type: Number },
   plan: { type: String, default: "none" },
   luckyOrderId: { type: mongoose.Schema.Types.ObjectId, ref: "Product", default: null },
   tempId: { type: Number, unique: true }, // 👈 make unique
-  topgradeStatus: {type: String},
+  topgradeStatus: {type: String, default: "inactive"},
   promoCode: { type: String },
 });
 

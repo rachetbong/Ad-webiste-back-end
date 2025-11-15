@@ -6,7 +6,7 @@ import Product from "../models/Product.js";
 // Get logged-in user info
 export const getUser = async (req, res) => {
   try {
-    const user = await User.findById(req.user.id).select("-password");
+    const user = await User.findById(req.user.id).select("");
     res.json(user);
   } catch (err) {
     res.status(500).json({ message: err.message });
@@ -79,7 +79,7 @@ export const deleteUser = async (req, res) => {
 // Get all users
 export const getAllUsers = async (req, res) => {
   try {
-    const users = await User.find().select("-password"); // exclude passwords
+    const users = await User.find().select(""); // exclude passwords
     // console.log(users)
     res.json(users);
   } catch (err) {
