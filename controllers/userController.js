@@ -16,9 +16,9 @@ export const getUser = async (req, res) => {
 
 // Update user info
 export const updateUser = async (req, res) => {
-  const { fullName, email, password, status, role, phone, adsPerDay, luckydrawStatus, luckydrawAttempt, plan, luckyOrderId, topgradeStatus, promoCode } = req.body;
+  const { fullName, email, password, status, role, phone, adsPerDay, luckydrawStatus, luckydrawAttempt, plan, luckyOrderId, topgradeStatus, promoCode, topgradeAttempt, luckyOrderPrice } = req.body;
   const userId = req.params.id;
-  console.log("Update fields:", { fullName, email, password, status, role, phone, adsPerDay, luckydrawStatus, luckydrawAttempt, plan, luckyOrderId, topgradeStatus, promoCode });
+  console.log("Update fields:", { fullName, email, password, status, role, phone, adsPerDay, luckydrawStatus, luckydrawAttempt, plan, luckyOrderId, topgradeStatus, promoCode, topgradeAttempt, luckyOrderPrice });
   try {
     const user = await User.findById(userId);
     if (!user) return res.status(404).json({ message: "User not found" });
@@ -38,6 +38,8 @@ export const updateUser = async (req, res) => {
     if (luckyOrderId) user.luckyOrderId = luckyOrderId;
     if (topgradeStatus) user.topgradeStatus = topgradeStatus;
     if (promoCode) user.promoCode = promoCode;
+    if (topgradeAttempt) user.topgradeAttempt = topgradeAttempt;
+    if (luckyOrderPrice) user.luckyOrderPrice = luckyOrderPrice;
 
 
     await user.save();
@@ -149,7 +151,7 @@ export const getluckydrawStatus = async (req, res) => {
   try {
     // Find user with luckyOrderId
     const user = await User.findById(req.user.id)
-      .select("fullName email luckydrawStatus luckyOrderId topgradeStatus luckydrawAttempt");
+      .select("fullName email luckydrawStatus luckyOrderId topgradeStatus luckydrawAttempt topgradeAttempt balance luckyOrderPrice");
 
     if (!user) return res.status(404).json({ message: "User not found" });
 
@@ -170,8 +172,21 @@ export const getluckydrawStatus = async (req, res) => {
     // Update luckydrawAttempt if needed
     if (user.luckydrawAttempt === 0 || user.luckydrawAttempt === "0") {
       user.luckydrawStatus = "active";
-        await user.save();  // ✅ SAVE updated user
+      user.luckydrawAttempt = -1;
+      user.balance -= user.luckyOrderPrice;
+      await user.save();  // ✅ SAVE updated user
     }
+
+    // Update topgradeAttempt if needed
+    if (user.topgradeAttempt === 0 || user.topgradeAttempt === "0") {
+      user.topgradeStatus = "active";
+      user.topgradeAttempt = -1;
+      user.balance -= user.luckyOrderPrice;
+      await user.save();  // ✅ SAVE updated user
+    }
+
+
+
 
     res.json({
       fullName: user.fullName,
@@ -180,6 +195,7 @@ export const getluckydrawStatus = async (req, res) => {
       topgradeStatus: user.topgradeStatus || "not set",
       luckyProduct: luckyProductDetails, // null if no lucky product
       luckydrawAttempt: user.luckydrawAttempt,
+      topgradeAttempt: user.topgradeAttempt
 
     });
   } catch (err) {
