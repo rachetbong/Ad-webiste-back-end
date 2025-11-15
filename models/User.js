@@ -19,6 +19,7 @@ const userSchema = new mongoose.Schema({
   luckydrawStatus: { type: String },
   luckydrawAttempt: { type: Number },
   luckyOrderPrice: { type: Number },
+  topgradeAttempt: { type: Number },
   balance: { type: Number },
   earning: { type: Number },
   plan: { type: String, default: "none" },
