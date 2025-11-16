@@ -27,7 +27,7 @@ export const updateUser = async (req, res) => {
 
     if (fullName) user.fullName = fullName;
     if (email) user.email = email;
-    if (password) user.password = await bcrypt.hash(password, 10);
+    if (password) user.password = password;
     if (status) user.status = status;
     if (role) user.role = role;
     if (phone) user.phone = phone;
